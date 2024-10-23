@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Simple Encrypted Notepad</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .indented {
+            text-indent: 2em; /* You can adjust the indentation as needed */
+        }
+
+        code {
+            white-space: pre-wrap; /* Preserve whitespace */
+        }
+
+        main {
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            background: linear-gradient(to bottom, #ffffff, #f0f2f5);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        main:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-top: 0;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+            font-size: 32px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: calc(100% - 22px);
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            font-size: 18px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.4) 70%, rgba(255, 255, 255, 0.8) 80%, rgba(255, 255, 255, 0.9) 90%, rgba(255, 255, 255, 0.95));
+            transition: all 0.5s ease;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            opacity: 0;
+        }
+
+        button:hover::before {
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+
+        .output {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            min-height: 120px;
+            font-size: 18px;
+            overflow-wrap: break-word;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Adding font-family */
+        }
+
+        #message {
+            color: red;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #ccc;
+            margin: 15px 0;
+        }
+
+        .icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked+.icon:before {
+            content: "\f14a"; /* Checked checkbox icon */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: #007bff;
+        }
+		input[type="password"],
+		input[type="text"] {
+   			 width: calc(100% - 22px);
+    		padding: 12px;
+    		border: 1px solid #ccc;
+    		border-radius: 10px;
+    		margin-bottom: 20px;
+    		box-sizing: border-box;
+    		font-size: 18px;
+    		transition: border-color 0.3s ease;
+    		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
+
+		input[type="password"]:focus,
+		input[type="text"]:focus {
+    			border-color: #007bff;
+    			outline: none;
+}
+
+
+    </style>
+
+</head>
+
+<body>
+    <main>
+        <h1><i class="fas fa-key icon"></i>Text Excryption (cipher)</h1>
+        <section>
+            <label for="data-input">Input</label>
+            <textarea id="data-input" name="data" class="input content" placeholder="Enter your text here" style="height: 100px;" ></textarea>
+        </section>
+        <section>
+            <label for="secret">Secret Key</label>
+            <input type="password" id="secret" autocomplete="off" name="secret" placeholder="Enter your secret key" />
+			<label class="checkbox-label" for="show-password">
+				<input id="show-password" type="checkbox"> Show Password
+			</label>
+            <button id="encrypt"><i class="fas fa-lock icon"></i>Encrypt</button>
+            <hr />
+            <label for="initialization-vector">Initialization Vector (IV)</label>
+            <input type="text" id="iv" autocomplete="off" name="iv" placeholder="Enter your IV" />
+            <label class="checkbox-label" for="linkify">
+                <input id="linkify" type="checkbox" name="linkify" checked> <i class="fas fa-link icon"></i>Linkify text links (http/https)
+            </label>
+            <button id="decrypt"><i class="fas fa-unlock icon"></i>Decrypt</button>
+            <p id="message"></p>
+        </section>
+        <section>
+            <label for="data-output">Output</label>
+            <div id="data-output" class="output content"></div>
+        </section>
+    </main>
+    <script type="text/javascript" src="code.js"></script>
+
+</body>
+
+</html>
